@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Upload Image";
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 900px;">
+
+        <h2 class="create-agent mb-4 text-uppercase">
+            Upload Image
+        </h2>
+
+        <div class="agent-form-card">
+
+            @if (ViewBag.Message != null)
+            {
+                <div class="alert alert-success">
+                    @ViewBag.Message
+                </div>
+            }
+
+            <form asp-controller="Upload"
+                  asp-action="Index"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="All"
+                     class="text-danger mb-3">
+                </div>
+
+                <div class="agent-info">
+                    Image Details
+                </div>
+
+                <div class="mb-3">
+                    <label for="imageFile"
+                           class="form-label agent-label">
+                        Select Image
+                    </label>
+
+                    <input type="file"
+                           id="imageFile"
+                           name="imageFile"
+                           class="form-control agent-input"
+                           accept=".jpg,.jpeg,.png,.webp" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="description"
+                           class="form-label agent-label">
+                        Description
+                    </label>
+
+                    <textarea id="description"
+                              name="description"
+                              class="form-control agent-input"
+                              rows="4"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label for="altText"
+                           class="form-label agent-label">
+                        Alternative Text (Alt Text)
+                    </label>
+
+                    <input type="text"
+                           id="altText"
+                           name="altText"
+                           class="form-control agent-input" />
+                </div>
+
+                <div class="d-flex justify-content-end mt-4 mb-5">
+                    <button type="submit" class="btn upload-btn">
+                        Upload Image
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>

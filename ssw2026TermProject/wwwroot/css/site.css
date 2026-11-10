@@ -1,0 +1,138 @@
+html {
+    font-size: 14px;
+    position: relative;
+    min-height: 100%;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+.custom-navbar {
+    background-color: #EEEADE;
+}
+
+.logo {
+    height: 70px;
+    width: auto;
+}
+
+.custom-footer {
+    margin-top: 0;
+    background-color: #936241;
+}
+
+.home-page-background {
+    width: 100%;
+    min-height: calc(100vh - 70px - 40px);
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-block {
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.search-btn {
+    background-color: #936241;
+}
+
+/* Create Agent Page*/
+.bg-color {
+    background-color: #FBF9F5;
+}
+
+.create-agent {
+    font-family: 'Cinzel', serif;
+    font-weight: 400;
+    margin: 0;
+}
+
+.agent-form-card {
+    border: 3px solid #E8E5DD;
+    background: #FBF9F5;
+    padding: 1.5rem 1rem 2rem;
+}
+
+.agent-info {
+    font-weight: 600;
+    font-size: 1.25rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.agent-label {
+    font-weight: 600;
+    margin-bottom: .25rem;
+}
+
+.agent-input {
+    background: #FBF9F5;
+    border: 3px solid #E8E5DD;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.create-btn {
+    border: 0;
+    border-radius: 0;
+    color: #fff;
+    font-weight: 600;
+    padding: .6rem 2rem;
+    background: #244B4B;
+    margin-bottom: 3rem;
+}
+
+.cancel-btn {
+    border: 0;
+    border-radius: 0;
+    color: #fff;
+    font-weight: 600;
+    padding: .6rem 2rem;
+    background: #B89C63;
+    margin-bottom: 3rem;
+}
+/* Upload Page*/
+.upload-btn {
+    background-color: #B89C63;
+    color: white;
+    border-radius: 0;
+    border: 1px solid #B89C63;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+body > .container-fluid {
+        flex: 1 0 auto;
+}

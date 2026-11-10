@@ -1,0 +1,121 @@
+@model ssw2026TermProject.Models.Customer;
+
+@{
+    ViewData["Title"] = "Create Customer";
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 900px;">
+
+        
+        <h2 class="create-agent mb-4 text-uppercase">CREATE CUSTOMER</h2>
+
+        
+        <div class="agent-form-card">
+
+            <div class="agent-info">
+                Customer Information
+            </div>
+
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label asp-for="FirstName" class="form-label agent-label">First Name</label>
+                        <input asp-for="FirstName" class="form-control agent-input" />
+                        <span asp-validation-for="FirstName" class="text-danger small d-block mt-1"></span>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label asp-for="MiddleName" class="form-label agent-label">Middle Name (Optional)</label>
+                        <input asp-for="MiddleName" class="form-control agent-input" />
+                        <span asp-validation-for="MiddleName" class="text-danger small d-block mt-1"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="LastName" class="form-label agent-label">Last Name</label>
+                        <input asp-for="LastName" class="form-control agent-input" />
+                        <span asp-validation-for="LastName" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+
+                
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label asp-for="Municipality" class="form-label agent-label">Municipality (City / Town)</label>
+                        <input asp-for="Municipality" class="form-control agent-input" />
+                        <span asp-validation-for="Municipality" class="text-danger small d-block mt-1"></span>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label asp-for="Province" class="form-label agent-label">Province</label>
+                        <input asp-for="Province" class="form-control agent-input" />
+                        <span asp-validation-for="Province" class="text-danger small d-block mt-1"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="PostalCode" class="form-label agent-label">Postal Code</label>
+                        <input asp-for="PostalCode" class="form-control agent-input" />
+                        <span asp-validation-for="PostalCode" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label asp-for="Address" class="form-label agent-label">Street Address</label>
+                        <input asp-for="Address" class="form-control agent-input" />
+                        <span asp-validation-for="Address" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label asp-for="DOB" class="form-label agent-label">Date of Birth</label>
+                        <input asp-for="DOB" class="form-control agent-input" />
+                        <span asp-validation-for="DOB" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label asp-for="Phone" class="form-label agent-label">Phone Number</label>
+                        <input asp-for="Phone" class="form-control agent-input" />
+                        <span asp-validation-for="Phone" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <label asp-for="Email" class="form-label agent-label">Email</label>
+                        <input asp-for="Email" type="email" class="form-control agent-input" />
+                        <span asp-validation-for="Email" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="form-check">
+                            <input asp-for="VerifyID" type="checkbox" class="form-check-input" />
+                            <label asp-for="VerifyID" class="form-check-label agent-label">Have you verified this agent's government ID? </label>
+                        </div>
+                            <span asp-validation-for="VerifyID" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <a asp-action="Index" class="btn cancel-btn text-decoration-none text-center">
+                        Cancel
+                    </a>
+                    <button type="submit" class="btn create-btn">
+                        Create Customer
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

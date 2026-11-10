@@ -1,0 +1,131 @@
+@model IEnumerable<ssw2026TermProject.Models.Agent>
+
+@{
+    ViewData["Title"] = "Index (Create Customer)";
+}
+
+<h1>Agent List</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MiddleName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Username)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SIN)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateOfBirth)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StreetAddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.City)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Province)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PostalCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MobilePhone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OfficePhone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HomePhone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HasVerifiedGovernmentId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DateOfEmployment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedByStaffId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(model => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.MiddleName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.SIN)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.DateOfBirth)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.StreetAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.City)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Province)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.PostalCode)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.MobilePhone)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.OfficePhone)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.HomePhone)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.HasVerifiedGovernmentId)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.DateOfEmployment)
+            </td>
+            <td>
+                @Html.DisplayFor(model => item.CreatedByStaffId)
+            </td>
+            <td>
+                    <a asp-action="Edit" asp-route-agentid="@item.AgentId">Edit</a> |
+                    <a asp-action="Details" asp-route-agentid="@item.AgentId">Details</a> |
+                    <a asp-action="Delete" asp-route-agentid="@item.AgentId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
