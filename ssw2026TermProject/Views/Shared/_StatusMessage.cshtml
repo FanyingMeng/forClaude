@@ -1,0 +1,10 @@
+@* 【E2 新增】共用组件：成功确认提示 / 错误提示
+   保存房源、保存预约、上传图片都复用它。控制器里用 TempData["Success"] / TempData["Error"] 传消息 *@
+@if (TempData["Success"] is string successMessage)
+{
+    <div class="alert alert-success" role="alert">@successMessage</div>
+}
+@if (TempData["Error"] is string errorMessage)
+{
+    <div class="alert alert-danger" role="alert">@errorMessage</div>
+}

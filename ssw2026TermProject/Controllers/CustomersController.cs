@@ -154,6 +154,15 @@ public class CustomersController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? id)
     {
+        // E2 新增：客户已经有房源或预约时不能删除（否则会破坏这些记录）
+        bool inUse = await _context.Listings.AnyAsync(l => l.CustomerId == id)
+                  || await _context.Showings.AnyAsync(s => s.CustomerId == id);
+        if (inUse)
+        {
+            TempData["Error"] = "This customer has listings or showings and cannot be deleted.";
+            return RedirectToAction(nameof(Index));
+        }
+
         var customer = await _context.Customers.FindAsync(id);
         if (customer != null)
         {

@@ -1,0 +1,19 @@
+@model CustomerSearchViewModel
+@* 【E2 新增】页面 1：Save Listing —— 客户搜索 + 结果列表
+   搜索逻辑和列表都在共用部分视图 _CustomerSearch 里 *@
+@{
+    ViewData["Title"] = "Save Listing - Find Customer";
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 900px;">
+
+        <h2 class="create-agent mb-2 text-uppercase">Save Listing</h2>
+        <p class="mb-4">Step 1: find the customer who owns the listing.</p>
+
+        <partial name="_StatusMessage" />
+
+        <partial name="_CustomerSearch" model="Model" />
+
+    </div>
+</div>

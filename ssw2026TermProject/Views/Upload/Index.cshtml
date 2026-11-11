@@ -1,81 +1,55 @@
-﻿@{
+@model UploadTypeViewModel
+@* 【E2 改版】页面 7 第一步：选择图片类型（经纪人照片 / 房源照片）
+   没选类型不允许继续，并提示 *@
+@{
     ViewData["Title"] = "Upload Image";
 }
 
 <div class="bg-color py-4">
     <div class="container" style="max-width: 900px;">
 
-        <h2 class="create-agent mb-4 text-uppercase">
-            Upload Image
-        </h2>
+        <h2 class="create-agent mb-4 text-uppercase">Upload Image</h2>
+
+        <partial name="_UploadSteps" model="1" />
+
+        <partial name="_StatusMessage" />
 
         <div class="agent-form-card">
 
-            @if (ViewBag.Message != null)
-            {
-                <div class="alert alert-success">
-                    @ViewBag.Message
-                </div>
-            }
+            <form asp-action="Index" method="post">
 
-            <form asp-controller="Upload"
-                  asp-action="Index"
-                  method="post"
-                  enctype="multipart/form-data">
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-                @Html.AntiForgeryToken()
+                <div class="agent-info">What kind of picture are you uploading?</div>
 
-                <div asp-validation-summary="All"
-                     class="text-danger mb-3">
-                </div>
-
-                <div class="agent-info">
-                    Image Details
-                </div>
-
-                <div class="mb-3">
-                    <label for="imageFile"
-                           class="form-label agent-label">
-                        Select Image
-                    </label>
-
-                    <input type="file"
-                           id="imageFile"
-                           name="imageFile"
-                           class="form-control agent-input"
-                           accept=".jpg,.jpeg,.png,.webp" />
+                <div class="row mb-4 justify-content-center">
+                    <div class="col-md-5 mb-3 mb-md-0">
+                        <div class="e2-info-bar h-100">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="ImageType" id="typeAgent"
+                                       value="@((int)UploadImageType.AgentPhoto)"
+                                       checked="@(Model.ImageType == UploadImageType.AgentPhoto)" />
+                                <label class="form-check-label agent-label" for="typeAgent">Agent Photo</label>
+                            </div>
+                            <div class="small text-muted ms-4">Linked to an agent. Search by the agent's name next.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="e2-info-bar h-100">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="ImageType" id="typeListing"
+                                       value="@((int)UploadImageType.ListingPhoto)"
+                                       checked="@(Model.ImageType == UploadImageType.ListingPhoto)" />
+                                <label class="form-check-label agent-label" for="typeListing">Listing Photo</label>
+                            </div>
+                            <div class="small text-muted ms-4">Linked to a listing. Search by the customer's name next.</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="description"
-                           class="form-label agent-label">
-                        Description
-                    </label>
-
-                    <textarea id="description"
-                              name="description"
-                              class="form-control agent-input"
-                              rows="4"></textarea>
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn create-btn">Next</button>
                 </div>
-
-                <div class="mb-4">
-                    <label for="altText"
-                           class="form-label agent-label">
-                        Alternative Text (Alt Text)
-                    </label>
-
-                    <input type="text"
-                           id="altText"
-                           name="altText"
-                           class="form-control agent-input" />
-                </div>
-
-                <div class="d-flex justify-content-end mt-4 mb-5">
-                    <button type="submit" class="btn upload-btn">
-                        Upload Image
-                    </button>
-                </div>
-
             </form>
 
         </div>

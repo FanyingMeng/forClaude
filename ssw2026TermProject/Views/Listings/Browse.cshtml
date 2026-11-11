@@ -1,0 +1,53 @@
+@model BrowseViewModel
+@* 【E2 新增】网站公开页（不需要登录）：只显示合同已签且状态为 Available 的房源
+   没有已批准图片的房源显示 "Picture not yet available" *@
+@{
+    ViewData["Title"] = "Properties";
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 1100px;">
+
+        <h2 class="create-agent mb-4 text-uppercase">Properties</h2>
+
+        <form asp-action="Browse" method="get" class="d-flex mb-4">
+            <input type="text" name="q" value="@Model.Query" class="form-control agent-input me-2"
+                   placeholder="Search by address, city or description..." style="max-width: 420px;" />
+            <button type="submit" class="btn create-btn btn-inline">Search</button>
+        </form>
+
+        @if (Model.Listings.Count == 0)
+        {
+            <div class="alert alert-info">No properties are available right now. Please try another search.</div>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var listing in Model.Listings)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="listing-card">
+                            @if (Model.CoverImages.TryGetValue(listing.ListingId, out var cover))
+                            {
+                                <img src="@Url.Content("~/" + cover.FilePath)" alt="@(cover.AltText ?? cover.FileName)" class="listing-thumb" style="border-width: 0 0 3px 0;" />
+                            }
+                            else
+                            {
+                                <div class="picture-placeholder" style="border-width: 0 0 2px 0;">Picture not yet available</div>
+                            }
+                            <div class="listing-body">
+                                <div class="listing-price">@listing.AskingPrice?.ToString("C0")</div>
+                                <div>@listing.StreetAddress, @listing.City</div>
+                                <div class="small text-muted mb-2">
+                                    @listing.Bedrooms bed &middot; @listing.Bathrooms bath &middot; @listing.SquareFeet sq ft
+                                </div>
+                                <a asp-action="Property" asp-route-id="@listing.ListingId" class="btn create-btn btn-inline">View</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+    </div>
+</div>

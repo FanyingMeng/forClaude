@@ -1,0 +1,78 @@
+@model PublicPropertyViewModel
+@* 【E2 新增】网站公开页：单个房源详情（给客户邮件里的线上链接指向这里）
+   显示经纪人的姓名、邮箱、手机、办公电话 *@
+@{
+    var listing = Model.Listing;
+    ViewData["Title"] = $"{listing.StreetAddress}, {listing.City}";
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 900px;">
+
+        <h2 class="create-agent mb-1 text-uppercase">@listing.StreetAddress</h2>
+        <p class="mb-4">@listing.City @listing.Province @listing.PostalCode &middot; Listing #@listing.ListingId</p>
+
+        <div class="agent-form-card">
+
+            @if (Model.Images.Count == 0)
+            {
+                <div class="picture-placeholder mb-3">Picture not yet available</div>
+            }
+            else
+            {
+                <div class="row mb-2">
+                    @foreach (var image in Model.Images)
+                    {
+                        <div class="col-6 col-md-4 mb-3">
+                            <img src="@Url.Content("~/" + image.FilePath)" alt="@(image.AltText ?? image.FileName)" class="listing-thumb" />
+                        </div>
+                    }
+                </div>
+            }
+
+            <div class="listing-price mb-3">@listing.AskingPrice?.ToString("C0")</div>
+
+            <dl class="row e2-dl">
+                <dt class="col-sm-4">Neighbourhood</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(m => listing.Area)</dd>
+
+                <dt class="col-sm-4">Area</dt>
+                <dd class="col-sm-8">@listing.SquareFeet sq ft</dd>
+
+                <dt class="col-sm-4">Bedrooms / Bathrooms / Floors</dt>
+                <dd class="col-sm-8">@listing.Bedrooms / @listing.Bathrooms / @listing.Floors</dd>
+
+                <dt class="col-sm-4">Heating</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(m => listing.HeatingType)</dd>
+
+                <dt class="col-sm-4">Features</dt>
+                <dd class="col-sm-8">
+                    Garage: @(listing.GarageSpaces == 0 ? "none" : listing.GarageSpaces + " space(s)")
+                    &middot; Fireplace: @(listing.HasFireplace ? "yes" : "no")
+                    &middot; Baby barn: @(listing.HasBabyBarn ? "yes" : "no")
+                    &middot; Central air: @(listing.HasCentralAir ? "yes" : "no")
+                    &middot; Screens: @(listing.HasScreens ? "yes" : "no")
+                </dd>
+
+                @if (!string.IsNullOrWhiteSpace(listing.FeatureDescription))
+                {
+                    <dt class="col-sm-4">Description</dt>
+                    <dd class="col-sm-8">@listing.FeatureDescription</dd>
+                }
+            </dl>
+
+            @if (listing.Agent != null)
+            {
+                <div class="e2-section-title">Your Agent</div>
+                <div><strong>@listing.Agent.FirstName @listing.Agent.LastName</strong></div>
+                <div>Email: <a href="mailto:@listing.Agent.Email">@listing.Agent.Email</a></div>
+                <div>Mobile: @listing.Agent.MobilePhone</div>
+                <div>Office: @listing.Agent.OfficePhone</div>
+            }
+
+            <div class="mt-4">
+                <a asp-action="Browse" class="btn cancel-btn btn-inline">Back to Properties</a>
+            </div>
+        </div>
+    </div>
+</div>

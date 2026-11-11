@@ -41,6 +41,8 @@ public class AgentsController : Controller
     }
 
     // GET: AGENTS/Create
+    // E2 规则 011：只有 Office Manager 或 Broker 才能创建员工账号
+    [Authorize(Roles = AppRoles.OfficeManagerOrBroker)]
     public IActionResult Create()
     {
         return View();
@@ -49,6 +51,8 @@ public class AgentsController : Controller
     // POST: AGENTS/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // E2 规则 011：只有 Office Manager 或 Broker 才能创建员工账号
+    [Authorize(Roles = AppRoles.OfficeManagerOrBroker)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("AgentId,FirstName,MiddleName,LastName,Username,SIN,DateOfBirth,StreetAddress,City,Province,PostalCode,MobilePhone,OfficePhone,HomePhone,Email,HasVerifiedGovernmentId,DateOfEmployment,CreatedByStaffId")] Agent agent)
@@ -118,6 +122,8 @@ public class AgentsController : Controller
     }
 
     // GET: AGENTS/Edit/5
+    // E2 规则 011：只有 Office Manager 或 Broker 才能修改员工账号
+    [Authorize(Roles = AppRoles.OfficeManagerOrBroker)]
     public async Task<IActionResult> Edit(int? agentid)
     {
         if (agentid == null)
@@ -136,6 +142,8 @@ public class AgentsController : Controller
     // POST: AGENTS/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    // E2 规则 011：只有 Office Manager 或 Broker 才能修改员工账号
+    [Authorize(Roles = AppRoles.OfficeManagerOrBroker)]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? agentid, [Bind("AgentId,FirstName,MiddleName,LastName,Username,SIN,DateOfBirth,StreetAddress,City,Province,PostalCode,MobilePhone,OfficePhone,HomePhone,Email,HasVerifiedGovernmentId,DateOfEmployment,CreatedByStaffId")] Agent agent)
@@ -222,6 +230,8 @@ public class AgentsController : Controller
     }
 
     // GET: AGENTS/Delete/5
+    // E2：删除也属于账号管理，限制为 Office Manager 或 Broker
+    [Authorize(Roles = AppRoles.OfficeManagerOrBroker)]
     public async Task<IActionResult> Delete(int? agentid)
     {
         if (agentid == null)
@@ -240,10 +250,22 @@ public class AgentsController : Controller
     }
 
     // POST: AGENTS/Delete/5
+    // E2：删除也属于账号管理，限制为 Office Manager 或 Broker
+    [Authorize(Roles = AppRoles.OfficeManagerOrBroker)]
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? agentid)
     {
+        // E2 新增：经纪人已经被房源、预约或图片引用时不能删除（否则会破坏这些记录）
+        bool inUse = await _context.Listings.AnyAsync(l => l.AgentId == agentid)
+                  || await _context.Showings.AnyAsync(s => s.AgentId == agentid)
+                  || await _context.UploadedImages.AnyAsync(i => i.AgentId == agentid);
+        if (inUse)
+        {
+            TempData["Error"] = "This agent is referenced by listings, showings or images and cannot be deleted.";
+            return RedirectToAction(nameof(Index));
+        }
+
         var agent = await _context.Agents.FindAsync(agentid);
         if (agent != null)
         {

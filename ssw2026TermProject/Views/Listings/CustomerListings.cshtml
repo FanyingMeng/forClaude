@@ -1,0 +1,87 @@
+@model CustomerListingsViewModel
+@* 【E2 新增】页面 2：客户房源概览
+   显示所选客户已有的房源（房源 ID、起止日期、街道地址、经纪人），可以新建房源或选择已有房源进入修改 *@
+@{
+    ViewData["Title"] = "Customer Listings";
+    var customer = Model.Customer;
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 900px;">
+
+        <h2 class="create-agent mb-4 text-uppercase">Customer Listings</h2>
+
+        <partial name="_StatusMessage" />
+
+        @* 客户信息条 *@
+        <div class="e2-info-bar">
+            <strong>@customer.FirstName @customer.MiddleName @customer.LastName</strong>
+            (Customer ID: @customer.ID)<br />
+            @customer.Phone &middot; @customer.Email
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="agent-info mb-0">Existing Listings</div>
+            @* "新建房源"按钮 *@
+            <a asp-action="Create" asp-route-customerId="@customer.ID" class="btn create-btn btn-inline">New Listing</a>
+        </div>
+
+        @if (Model.Listings.Count == 0)
+        {
+            <div class="alert alert-info">This customer has no listings yet. Click "New Listing" to create one.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="e2-table">
+                    <thead>
+                        <tr>
+                            <th>Listing ID</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Street Address</th>
+                            <th>Agent</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var listing in Model.Listings)
+                        {
+                            <tr>
+                                <td>#@listing.ListingId</td>
+                                <td>@(listing.StartDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                                <td>@(listing.EndDate?.ToString("yyyy-MM-dd") ?? "-")</td>
+                                <td>@listing.StreetAddress, @listing.City</td>
+                                <td>
+                                    @if (listing.Agent != null)
+                                    {
+                                        @($"{listing.Agent.FirstName} {listing.Agent.LastName}")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">Not assigned</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="status-badge status-@(listing.Status.ToString().ToLower())">@Html.DisplayFor(m => listing.Status)</span>
+                                </td>
+                                <td class="text-end text-nowrap">
+                                    <a asp-action="Details" asp-route-id="@listing.ListingId">View</a>
+                                    @if (listing.Status != ListingStatus.Cancelled)
+                                    {
+                                        <span> | </span>
+                                        <a asp-action="Edit" asp-route-id="@listing.ListingId">Edit</a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <a asp-action="SearchCustomer" class="btn cancel-btn btn-inline">Back to Search</a>
+
+    </div>
+</div>

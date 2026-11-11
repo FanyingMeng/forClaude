@@ -136,3 +136,164 @@ body {
 body > .container-fluid {
         flex: 1 0 auto;
 }
+
+
+/* ============================================================
+   E2 新增样式（房源 / 预约 / 上传图片页面）
+   沿用 E1 的配色：米色 #EEEADE / #FBF9F5、边框 #E8E5DD、深绿 #244B4B、金色 #B89C63、棕色 #936241
+   ============================================================ */
+
+/* 表格：与表单卡片同款的米色边框 */
+.e2-table {
+    width: 100%;
+    background: #FBF9F5;
+    border: 3px solid #E8E5DD;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+.e2-table th {
+    background: #EEEADE;
+    font-weight: 600;
+    padding: .6rem .75rem;
+    border-bottom: 2px solid #E8E5DD;
+    white-space: nowrap;
+}
+
+.e2-table td {
+    padding: .6rem .75rem;
+    border-bottom: 1px solid #E8E5DD;
+    vertical-align: middle;
+}
+
+/* 表单里每一块的小标题 */
+.e2-section-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #244B4B;
+    margin: 1.75rem 0 1rem;
+    padding-bottom: .35rem;
+    border-bottom: 2px solid #E8E5DD;
+}
+
+/* 顶部的"客户信息"提示条 */
+.e2-info-bar {
+    background: #EEEADE;
+    border-left: 5px solid #B89C63;
+    padding: .75rem 1rem;
+    margin-bottom: 1.25rem;
+}
+
+/* 详情页里的"名称：内容"列表 */
+.e2-dl dt {
+    font-weight: 600;
+}
+
+.e2-dl dd {
+    margin-bottom: .6rem;
+}
+
+/* 房源状态标签 */
+.status-badge {
+    display: inline-block;
+    padding: .2rem .65rem;
+    color: #fff;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+.status-available { background: #244B4B; }
+.status-notavailable { background: #B89C63; }
+.status-expired { background: #936241; }
+.status-cancelled { background: #8A8A8A; }
+
+/* 没有图片 / 图片未审核时的占位框（"Picture not yet available" / "Picture Not Available"） */
+.picture-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 150px;
+    padding: 1rem;
+    background: #EEEADE;
+    border: 2px dashed #B89C63;
+    color: #936241;
+    font-weight: 600;
+}
+
+/* 房源图片缩略图 */
+.listing-thumb {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border: 3px solid #E8E5DD;
+}
+
+/* 公开房源列表里的卡片 */
+.listing-card {
+    background: #FBF9F5;
+    border: 3px solid #E8E5DD;
+    height: 100%;
+}
+
+.listing-card .listing-body {
+    padding: 1rem;
+}
+
+.listing-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #244B4B;
+}
+
+/* 上传图片的三步进度条 */
+.step-indicator {
+    display: flex;
+    gap: .5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.step-indicator .step {
+    flex: 1 1 0;
+    min-width: 140px;
+    padding: .5rem .75rem;
+    background: #EEEADE;
+    color: #6b6b6b;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 4px solid #E8E5DD;
+}
+
+.step-indicator .step.active {
+    background: #244B4B;
+    color: #fff;
+    border-bottom-color: #B89C63;
+}
+
+/* 危险操作按钮（取消房源） */
+.danger-btn {
+    border: 0;
+    border-radius: 0;
+    color: #fff;
+    font-weight: 600;
+    padding: .6rem 2rem;
+    background: #8B2E2E;
+}
+
+/* 行内的操作按钮：覆盖 create-btn / cancel-btn 自带的底部大间距 */
+.btn-inline {
+    margin-bottom: 0 !important;
+    text-decoration: none;
+    display: inline-block;
+}
+
+/* 模拟邮件内容框 */
+.email-box {
+    background: #fff;
+    border: 1px solid #E8E5DD;
+    padding: 1rem;
+    white-space: pre-wrap;
+    font-family: inherit;
+    margin: 0;
+}

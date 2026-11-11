@@ -4,14 +4,16 @@
 <div class="home-page-background">
     <div class="text-center main-block pt-3 pb-5 px-5">
         <h3 class="text-center">Rooted in trust. Built for you.</h3>
-        <div class="d-flex justify-content-center mt-4">
+        @* E2 修改：搜索框变成真正的表单，提交到公开房源列表（Listings/Browse），按地址/城市/描述搜索 *@
+        <form asp-controller="Listings" asp-action="Browse" method="get" class="d-flex justify-content-center mt-4">
             <input type="text"
+                   name="q"
                    class="form-control me-2"
                    placeholder="Search properties..."
                    style="max-width: 400px;" />
 
-            <button type="button" class="btn search-btn bi bi-search"></button>
-        </div>
+            <button type="submit" class="btn search-btn bi bi-search"></button>
+        </form>
 
     </div>
 </div>

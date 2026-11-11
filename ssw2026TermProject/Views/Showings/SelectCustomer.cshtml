@@ -1,0 +1,19 @@
+@model CustomerSearchViewModel
+@* 【E2 新增】页面 5 第一步：预约前先选客户（复用共用的客户搜索部分视图）
+   客户不存在时，部分视图里会提示先去 Create Customer *@
+@{
+    ViewData["Title"] = "Book Showing - Find Customer";
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 900px;">
+
+        <h2 class="create-agent mb-2 text-uppercase">Book Showing</h2>
+        <p class="mb-4">Step 1: find the customer who wants to view a property.</p>
+
+        <partial name="_StatusMessage" />
+
+        <partial name="_CustomerSearch" model="Model" />
+
+    </div>
+</div>
