@@ -1,0 +1,17 @@
+@model AgentSelectModel
+@* 【E2 新增】共用组件：经纪人选择下拉框（房源表单、预约表单、预约搜索都用）
+   Locked = true 时下拉框禁用，同时输出隐藏域，保证选中的值仍会随表单提交 *@
+
+<select id="@Model.ElementId" name="@Model.FieldName" class="form-select agent-input" disabled="@Model.Locked">
+    <option value="">@Model.Placeholder</option>
+    @foreach (var agent in Model.Agents)
+    {
+        <option value="@agent.AgentId" selected="@(Model.SelectedId == agent.AgentId)">
+            @agent.FirstName @agent.LastName (@agent.Username)
+        </option>
+    }
+</select>
+@if (Model.Locked)
+{
+    <input type="hidden" name="@Model.FieldName" value="@Model.SelectedId" />
+}

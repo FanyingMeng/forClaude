@@ -1,0 +1,7 @@
+@model int
+@* 【E2 新增】上传图片页的三步进度条：Model 是当前第几步（1~3） *@
+<div class="step-indicator">
+    <div class="step @(Model == 1 ? "active" : "")">1. Image Type</div>
+    <div class="step @(Model == 2 ? "active" : "")">2. Find Record</div>
+    <div class="step @(Model == 3 ? "active" : "")">3. Upload File</div>
+</div>

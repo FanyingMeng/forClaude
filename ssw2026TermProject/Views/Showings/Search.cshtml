@@ -1,0 +1,110 @@
+@model ShowingSearchViewModel
+@* 【E2 新增】页面 6：预约搜索 + 结果列表
+   按日期和/或经纪人搜索；点击结果进入页面 5 修改（只有 Office Manager 或相关经纪人才有"Edit"链接） *@
+@{
+    ViewData["Title"] = "Showings";
+
+    // 当前用户可以修改的预约 ID 集合（由控制器计算）
+    var editable = ViewBag.EditableIds as HashSet<int> ?? new HashSet<int>();
+
+    // 搜索用的经纪人下拉（共用组件 _AgentSelect），第一项改成"任何经纪人"
+    var agentSelect = new AgentSelectModel
+    {
+        FieldName = "AgentId",
+        SelectedId = Model.AgentId,
+        Agents = Model.Agents,
+        Placeholder = "-- Any agent --",
+        ElementId = "searchAgent"
+    };
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 1000px;">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="create-agent text-uppercase mb-0">Showings</h2>
+            @* 预约入口：先选客户，再填预约表单（前台没有预约权限，所以不显示） *@
+            @if (User.IsInRole(AppRoles.OfficeManager) || User.IsInRole(AppRoles.Broker) || User.IsInRole(AppRoles.AgentRole))
+            {
+                <a asp-action="SelectCustomer" class="btn create-btn btn-inline">Book Showing</a>
+            }
+        </div>
+
+        <partial name="_StatusMessage" />
+
+        <div class="agent-form-card mb-4">
+            <div class="agent-info">Search Showings</div>
+
+            <form asp-action="Search" method="get">
+                <input type="hidden" name="Searched" value="true" />
+
+                @* 条件无效（日期格式错误 / 什么都没填）时显示的错误 *@
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="searchDate" class="form-label agent-label">Date</label>
+                        <input type="date" id="searchDate" name="Date" class="form-control agent-input"
+                               value="@Model.Date?.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label agent-label">Agent</label>
+                        <partial name="_AgentSelect" model="agentSelect" />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn create-btn btn-inline">Search</button>
+                </div>
+            </form>
+        </div>
+
+        @if (Model.Searched && ViewData.ModelState.IsValid)
+        {
+            if (Model.Results.Count == 0)
+            {
+                @* 没有结果：提示重试 *@
+                <div class="alert alert-warning">No showings match your search. Please try again.</div>
+            }
+            else
+            {
+                <div class="e2-section-title mt-0">Matching Showings (@Model.Results.Count)</div>
+                <div class="table-responsive">
+                    <table class="e2-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Listing</th>
+                                <th>Customer</th>
+                                <th>Agent</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var showing in Model.Results)
+                            {
+                                <tr>
+                                    <td>@showing.ShowingDate?.ToString("yyyy-MM-dd")</td>
+                                    <td>@showing.StartTime?.ToString("HH:mm") - @showing.EndTime?.ToString("HH:mm")</td>
+                                    <td>#@showing.ListingId - @showing.Listing?.StreetAddress</td>
+                                    <td>@showing.Customer?.FirstName @showing.Customer?.LastName</td>
+                                    <td>@showing.Agent?.FirstName @showing.Agent?.LastName</td>
+                                    <td class="text-end text-nowrap">
+                                        <a asp-action="Details" asp-route-id="@showing.ShowingId">View</a>
+                                        @if (editable.Contains(showing.ShowingId))
+                                        {
+                                            <span> | </span>
+                                            <a asp-action="Edit" asp-route-id="@showing.ShowingId">Edit</a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        }
+
+    </div>
+</div>

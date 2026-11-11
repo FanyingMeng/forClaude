@@ -1,0 +1,111 @@
+@model UploadTargetViewModel
+@* 【E2 改版】页面 7 第二步：搜索并选择关联对象
+   房源：按客户名搜索；经纪人：按经纪人名搜索。找不到时提示重试；必须选中一条记录才能继续 *@
+@{
+    ViewData["Title"] = "Upload Image - Find Record";
+    bool isListing = Model.ImageType == UploadImageType.ListingPhoto;
+    bool hasResults = Model.Listings.Count > 0 || Model.Agents.Count > 0;
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 900px;">
+
+        <h2 class="create-agent mb-4 text-uppercase">Upload Image</h2>
+
+        <partial name="_UploadSteps" model="2" />
+
+        <partial name="_StatusMessage" />
+
+        @* ---------- 搜索表单 ---------- *@
+        <div class="agent-form-card mb-4">
+            <div class="agent-info">
+                @(isListing ? "Find the listing (search by customer name)" : "Find the agent (search by agent name)")
+            </div>
+
+            <form asp-action="SelectTarget" method="get">
+                <input type="hidden" name="ImageType" value="@Model.ImageType" />
+                <input type="hidden" name="Searched" value="true" />
+
+                @* 没填名字 / 找不到对象 / 没选记录 时的错误提示 *@
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="name" class="form-label agent-label">@(isListing ? "Customer Name" : "Agent Name")</label>
+                        <input type="text" id="name" name="Name" value="@Model.Name" class="form-control agent-input"
+                               placeholder="@(isListing ? "e.g. John Smith" : "e.g. Alice Agent")" />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn cancel-btn btn-inline">Back</a>
+                    <button type="submit" class="btn create-btn btn-inline">Search</button>
+                </div>
+            </form>
+        </div>
+
+        @* ---------- 搜索结果：选中一条记录后才能继续 ---------- *@
+        @if (Model.Searched && hasResults)
+        {
+            <form asp-action="SelectTarget" method="post">
+                <input type="hidden" name="ImageType" value="@Model.ImageType" />
+                <input type="hidden" name="Name" value="@Model.Name" />
+
+                <div class="table-responsive">
+                    <table class="e2-table">
+                        @if (isListing)
+                        {
+                            <thead>
+                                <tr><th></th><th>Listing ID</th><th>Address</th><th>Customer</th><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var listing in Model.Listings)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="radio" class="form-check-input" name="SelectedId"
+                                                   value="@listing.ListingId" id="t_@listing.ListingId"
+                                                   checked="@(Model.SelectedId == listing.ListingId)" />
+                                        </td>
+                                        <td><label for="t_@listing.ListingId">#@listing.ListingId</label></td>
+                                        <td>@listing.StreetAddress, @listing.City</td>
+                                        <td>@listing.Customer?.FirstName @listing.Customer?.LastName</td>
+                                        <td>@Html.DisplayFor(m => listing.Status)</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        }
+                        else
+                        {
+                            <thead>
+                                <tr><th></th><th>Name</th><th>Username</th><th>Email</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var agent in Model.Agents)
+                                {
+                                    <tr>
+                                        <td>
+                                            <input type="radio" class="form-check-input" name="SelectedId"
+                                                   value="@agent.AgentId" id="t_@agent.AgentId"
+                                                   checked="@(Model.SelectedId == agent.AgentId)" />
+                                        </td>
+                                        <td><label for="t_@agent.AgentId">@agent.FirstName @agent.MiddleName @agent.LastName</label></td>
+                                        <td>@agent.Username</td>
+                                        <td>@agent.Email</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        }
+                    </table>
+                </div>
+
+                <span asp-validation-for="SelectedId" class="text-danger d-block mb-2"></span>
+
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn create-btn btn-inline">Continue</button>
+                </div>
+            </form>
+        }
+
+    </div>
+</div>

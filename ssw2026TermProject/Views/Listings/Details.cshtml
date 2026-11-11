@@ -1,0 +1,175 @@
+@model ListingDetailsViewModel
+@* 【E2 新增】页面 4：房源详情 / 取消页
+   显示保存后的房源信息和确认消息；有权限的人可以取消房源（规则 008） *@
+@{
+    var listing = Model.Listing;
+    ViewData["Title"] = $"Listing #{listing.ListingId}";
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 900px;">
+
+        <h2 class="create-agent mb-4 text-uppercase">Listing #@listing.ListingId</h2>
+
+        @* 保存成功的确认消息 / 错误提示（共用组件） *@
+        <partial name="_StatusMessage" />
+
+        <div class="agent-form-card">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="agent-info mb-0">@listing.StreetAddress, @listing.City</div>
+                <span class="status-badge status-@(listing.Status.ToString().ToLower())">@Html.DisplayFor(m => listing.Status)</span>
+            </div>
+
+            @* ---------- 图片 ---------- *@
+            @if (Model.DisplayImages.Count == 0)
+            {
+                <div class="picture-placeholder mb-2">Picture not yet available</div>
+            }
+            else
+            {
+                <div class="row mb-2">
+                    @foreach (var image in Model.DisplayImages)
+                    {
+                        <div class="col-6 col-md-3 mb-3">
+                            <img src="@Url.Content("~/" + image.FilePath)" alt="@(image.AltText ?? image.FileName)" class="listing-thumb" />
+                        </div>
+                    }
+                </div>
+            }
+            @if (Model.PendingImageCount > 0)
+            {
+                <div class="form-text mb-3">
+                    @Model.PendingImageCount picture(s) uploaded but not approved yet. They show as "Picture Not Available" on the website.
+                </div>
+            }
+
+            @* ---------- 基本信息 ---------- *@
+            <div class="e2-section-title">Property</div>
+            <dl class="row e2-dl">
+                <dt class="col-sm-4">Owner</dt>
+                <dd class="col-sm-8">@listing.Customer?.FirstName @listing.Customer?.LastName (ID: @listing.CustomerId)</dd>
+
+                <dt class="col-sm-4">Address</dt>
+                <dd class="col-sm-8">@listing.StreetAddress, @listing.City @listing.Province @listing.PostalCode</dd>
+
+                <dt class="col-sm-4">Neighbourhood</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(m => listing.Area)</dd>
+
+                <dt class="col-sm-4">Area</dt>
+                <dd class="col-sm-8">@listing.SquareFeet sq ft</dd>
+
+                <dt class="col-sm-4">Bedrooms / Bathrooms / Floors</dt>
+                <dd class="col-sm-8">@listing.Bedrooms / @listing.Bathrooms / @listing.Floors</dd>
+
+                <dt class="col-sm-4">Heating</dt>
+                <dd class="col-sm-8">@Html.DisplayFor(m => listing.HeatingType)</dd>
+
+                <dt class="col-sm-4">Additional Features</dt>
+                <dd class="col-sm-8">
+                    Garage: @(listing.GarageSpaces == 0 ? "none" : listing.GarageSpaces + " space(s)")
+                    &middot; Fireplace: @(listing.HasFireplace ? "yes" : "no")
+                    &middot; Baby barn: @(listing.HasBabyBarn ? "yes" : "no")
+                    &middot; Central air: @(listing.HasCentralAir ? "yes" : "no")
+                    &middot; Screens: @(listing.HasScreens ? "yes" : "no")
+                </dd>
+
+                @if (!string.IsNullOrWhiteSpace(listing.FeatureDescription))
+                {
+                    <dt class="col-sm-4">Description</dt>
+                    <dd class="col-sm-8">@listing.FeatureDescription</dd>
+                }
+
+                <dt class="col-sm-4">Asking Price</dt>
+                <dd class="col-sm-8">@listing.AskingPrice?.ToString("C")</dd>
+            </dl>
+
+            @* ---------- 合同与经纪人 ---------- *@
+            <div class="e2-section-title">Contract &amp; Agent</div>
+            <dl class="row e2-dl">
+                <dt class="col-sm-4">Contract Signed</dt>
+                <dd class="col-sm-8">@(listing.ContractSigned ? "Yes" : "No")</dd>
+
+                <dt class="col-sm-4">Contract Period</dt>
+                <dd class="col-sm-8">
+                    @if (listing.StartDate != null && listing.EndDate != null)
+                    {
+                        @($"{listing.StartDate:yyyy-MM-dd} to {listing.EndDate:yyyy-MM-dd}")
+                    }
+                    else
+                    {
+                        <span class="text-muted">-</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-4">On the Website</dt>
+                <dd class="col-sm-8">
+                    @if (listing.ContractSigned && listing.Status == ListingStatus.Available)
+                    {
+                        <a asp-action="Property" asp-route-id="@listing.ListingId">Yes - view public page</a>
+                    }
+                    else
+                    {
+                        <span>No</span>
+                    }
+                </dd>
+
+                @* 房源页显示经纪人的姓名、邮箱、手机、办公电话 *@
+                <dt class="col-sm-4">Agent</dt>
+                <dd class="col-sm-8">
+                    @if (listing.Agent != null)
+                    {
+                        <div><strong>@listing.Agent.FirstName @listing.Agent.LastName</strong></div>
+                        <div>Email: @listing.Agent.Email</div>
+                        <div>Mobile: @listing.Agent.MobilePhone</div>
+                        <div>Office: @listing.Agent.OfficePhone</div>
+                    }
+                    else
+                    {
+                        <span class="text-muted">Not assigned</span>
+                    }
+                </dd>
+            </dl>
+
+            @* ---------- 模拟发送给客户的邮件（演示时展示邮件内容） ---------- *@
+            @if (Model.LatestEmail != null)
+            {
+                <div class="e2-section-title">Email Sent to Customer (simulated)</div>
+                <div class="mb-2 small text-muted">
+                    To: @Model.LatestEmail.ToAddress &middot; @Model.LatestEmail.SentDate.ToString("yyyy-MM-dd HH:mm")
+                </div>
+                <div class="mb-1"><strong>@Model.LatestEmail.Subject</strong></div>
+                <pre class="email-box">@Model.LatestEmail.Body</pre>
+            }
+
+            @* ---------- 操作按钮 ---------- *@
+            <div class="d-flex flex-wrap justify-content-end gap-3 mt-4">
+                <a asp-action="CustomerListings" asp-route-customerId="@listing.CustomerId" class="btn cancel-btn btn-inline">Back to Customer</a>
+
+                @if (listing.Status != ListingStatus.Cancelled)
+                {
+                    <a asp-controller="Upload" asp-action="Index" class="btn upload-btn btn-inline">Upload Image</a>
+                    <a asp-action="Edit" asp-route-id="@listing.ListingId" class="btn create-btn btn-inline">Edit</a>
+                }
+
+                @* 取消房源：有权限才显示按钮（规则 008） *@
+                @if (Model.CanCancel)
+                {
+                    <form asp-action="Cancel" asp-route-id="@listing.ListingId" method="post" class="d-inline"
+                          onsubmit="return confirm('Cancel listing #@listing.ListingId? This cannot be undone.');">
+                        <button type="submit" class="btn danger-btn">Cancel Listing</button>
+                    </form>
+                }
+            </div>
+
+            @if (Model.CancelBlockedByRole)
+            {
+                @* 已分配经纪人时，非 Broker 看不到取消按钮，只提示无权限 *@
+                <div class="text-end small text-muted mt-2">
+                    You do not have permission to cancel this listing. Only a Broker can cancel a listing that has an agent assigned.
+                </div>
+            }
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,316 @@
+@model ListingFormViewModel
+@* 【E2 新增】页面 3：房源表单（新建和修改共用同一个视图）
+   IsEdit = false 时提交到 Create；IsEdit = true 时提交到 Edit *@
+@{
+    ViewData["Title"] = Model.IsEdit ? "Edit Listing" : "New Listing";
+
+    // 经纪人下拉框的配置（共用组件 _AgentSelect）
+    var agentSelect = new AgentSelectModel
+    {
+        FieldName = "Listing.AgentId",
+        SelectedId = Model.Listing.AgentId,
+        Agents = Model.Agents,
+        Locked = Model.AgentLocked,
+        ElementId = "agentSelect"
+    };
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 900px;">
+
+        <h2 class="create-agent mb-4 text-uppercase">@(Model.IsEdit ? "Edit Listing" : "New Listing")</h2>
+
+        <partial name="_StatusMessage" />
+
+        @if (Model.Customer != null)
+        {
+            <div class="e2-info-bar">
+                Owner: <strong>@Model.Customer.FirstName @Model.Customer.LastName</strong>
+                (Customer ID: @Model.Customer.ID)
+                @if (Model.IsEdit)
+                {
+                    <span> &middot; Listing #@Model.Listing.ListingId</span>
+                }
+            </div>
+        }
+
+        <div class="agent-form-card">
+
+            <form asp-action="@(Model.IsEdit ? "Edit" : "Create")"
+                  asp-route-id="@(Model.IsEdit ? Model.Listing.ListingId : (int?)null)"
+                  method="post">
+
+                @* 隐藏域：房源 ID 和所属客户 *@
+                <input type="hidden" asp-for="Listing.ListingId" />
+                <input type="hidden" asp-for="Listing.CustomerId" />
+
+                @* 校验失败或业务规则不通过时显示的错误 *@
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                @* ---------- 地址 ---------- *@
+                <div class="e2-section-title mt-0">Address</div>
+
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label asp-for="Listing.StreetAddress" class="form-label agent-label">Street Address</label>
+                        <input asp-for="Listing.StreetAddress" class="form-control agent-input" />
+                        <span asp-validation-for="Listing.StreetAddress" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label asp-for="Listing.City" class="form-label agent-label">City</label>
+                        <input asp-for="Listing.City" class="form-control agent-input" />
+                        <span asp-validation-for="Listing.City" class="text-danger small d-block mt-1"></span>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label asp-for="Listing.Province" class="form-label agent-label">Province</label>
+                        <input asp-for="Listing.Province" class="form-control agent-input" />
+                        <span asp-validation-for="Listing.Province" class="text-danger small d-block mt-1"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Listing.PostalCode" class="form-label agent-label">Postal Code</label>
+                        <input asp-for="Listing.PostalCode" class="form-control agent-input" />
+                        <span asp-validation-for="Listing.PostalCode" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+
+                @* ---------- 房屋信息 ---------- *@
+                <div class="e2-section-title">House Information</div>
+
+                <div class="row mb-3">
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <label asp-for="Listing.SquareFeet" class="form-label agent-label">Area (sq ft)</label>
+                        <input asp-for="Listing.SquareFeet" type="number" min="100" class="form-control agent-input" />
+                        <span asp-validation-for="Listing.SquareFeet" class="text-danger small d-block mt-1"></span>
+                    </div>
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <label asp-for="Listing.Bedrooms" class="form-label agent-label">Bedrooms</label>
+                        <input asp-for="Listing.Bedrooms" type="number" min="0" class="form-control agent-input" />
+                        <span asp-validation-for="Listing.Bedrooms" class="text-danger small d-block mt-1"></span>
+                    </div>
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <label asp-for="Listing.Bathrooms" class="form-label agent-label">Bathrooms</label>
+                        <input asp-for="Listing.Bathrooms" type="number" min="0" class="form-control agent-input" />
+                        <span asp-validation-for="Listing.Bathrooms" class="text-danger small d-block mt-1"></span>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="Listing.Floors" class="form-label agent-label">Floors</label>
+                        <input asp-for="Listing.Floors" type="number" min="1" class="form-control agent-input" />
+                        <span asp-validation-for="Listing.Floors" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label asp-for="Listing.Area" class="form-label agent-label">Neighbourhood</label>
+                        @* 所在区域下拉：West End、North End 等 *@
+                        <select asp-for="Listing.Area" asp-items="Html.GetEnumSelectList<CityArea>()" class="form-select agent-input"></select>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Listing.HeatingType" class="form-label agent-label">Heating Type</label>
+                        @* 取暖方式下拉：电、燃气、热泵、燃油炉、烧柴炉、地热 *@
+                        <select asp-for="Listing.HeatingType" asp-items="Html.GetEnumSelectList<HeatingType>()" class="form-select agent-input"></select>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label asp-for="Listing.FeatureDescription" class="form-label agent-label">Features Description</label>
+                        <textarea asp-for="Listing.FeatureDescription" rows="3" class="form-control agent-input"></textarea>
+                        <span asp-validation-for="Listing.FeatureDescription" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+
+                @* ---------- 附加设施 ---------- *@
+                <div class="e2-section-title">Additional Features</div>
+
+                <div class="row mb-3">
+                    <div class="col-md-3 mb-3 mb-md-0">
+                        <label asp-for="Listing.GarageSpaces" class="form-label agent-label">Garage</label>
+                        @* 车库：没有 / 1 / 2 / 3 个车位 *@
+                        <select asp-for="Listing.GarageSpaces" class="form-select agent-input">
+                            <option value="0">No garage</option>
+                            <option value="1">1 space</option>
+                            <option value="2">2 spaces</option>
+                            <option value="3">3 spaces</option>
+                        </select>
+                        <span asp-validation-for="Listing.GarageSpaces" class="text-danger small d-block mt-1"></span>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="row pt-md-4">
+                            <div class="col-6 col-md-3">
+                                <div class="form-check">
+                                    <input asp-for="Listing.HasFireplace" type="checkbox" class="form-check-input" />
+                                    <label asp-for="Listing.HasFireplace" class="form-check-label">Fireplace</label>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="form-check">
+                                    <input asp-for="Listing.HasBabyBarn" type="checkbox" class="form-check-input" />
+                                    <label asp-for="Listing.HasBabyBarn" class="form-check-label">Baby Barn</label>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="form-check">
+                                    <input asp-for="Listing.HasCentralAir" type="checkbox" class="form-check-input" />
+                                    <label asp-for="Listing.HasCentralAir" class="form-check-label">Central Air</label>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="form-check">
+                                    <input asp-for="Listing.HasScreens" type="checkbox" class="form-check-input" />
+                                    <label asp-for="Listing.HasScreens" class="form-check-label">Screens</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @* ---------- 价格与合同 ---------- *@
+                <div class="e2-section-title">Price &amp; Contract</div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Listing.AskingPrice" class="form-label agent-label">Asking Price ($)</label>
+                        <input asp-for="Listing.AskingPrice" type="number" step="0.01" min="1" class="form-control agent-input" />
+                        <span asp-validation-for="Listing.AskingPrice" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        @* "合同已签"勾选：已签才会绑定经纪人、生成起止日期、在网站上可见并给客户发邮件 *@
+                        <div class="form-check">
+                            <input asp-for="Listing.ContractSigned" type="checkbox" class="form-check-input" id="contractSigned" />
+                            <label asp-for="Listing.ContractSigned" class="form-check-label agent-label">Contract Signed</label>
+                        </div>
+                        <span asp-validation-for="Listing.ContractSigned" class="text-danger small d-block mt-1"></span>
+                        <div class="form-text">
+                            If signed: the agent is assigned, the contract runs for 3 months from today, the listing goes online
+                            and the customer receives an email. If not signed: the listing is saved only as a record
+                            (no agent, not available, not on the website).
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label agent-label">Agent</label>
+                        <partial name="_AgentSelect" model="agentSelect" />
+                        <span asp-validation-for="Listing.AgentId" class="text-danger small d-block mt-1"></span>
+                        @if (Model.AgentLocked)
+                        {
+                            <div class="form-text">The contract is active, so the agent cannot be changed until it expires.</div>
+                        }
+                    </div>
+                </div>
+
+                @* 修改模式下显示合同信息（只读） *@
+                @if (Model.IsEdit)
+                {
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label agent-label">Start Date</label>
+                            <input class="form-control agent-input" value="@(Model.Listing.StartDate?.ToString("yyyy-MM-dd") ?? "-")" disabled />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label agent-label">End Date</label>
+                            <input class="form-control agent-input" value="@(Model.Listing.EndDate?.ToString("yyyy-MM-dd") ?? "-")" disabled />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label agent-label">Status</label>
+                            <input class="form-control agent-input" value="@Html.DisplayFor(m => m.Listing.Status)" disabled />
+                        </div>
+                    </div>
+                }
+
+                @* ---------- 图片 ---------- *@
+                <div class="e2-section-title">Pictures</div>
+
+                @if (Model.ApprovedImages.Count == 0)
+                {
+                    @* 没有已批准的图片：显示 "Picture not yet available" *@
+                    <div class="picture-placeholder mb-2">Picture not yet available</div>
+                    <div class="form-text mb-3">
+                        @if (!Model.IsEdit)
+                        {
+                            <span>Save the listing first, then use <a asp-controller="Upload" asp-action="Index">Upload Image</a> to add pictures.</span>
+                        }
+                        else
+                        {
+                            <span>No approved pictures yet. Upload pictures with <a asp-controller="Upload" asp-action="Index">Upload Image</a>; they can be selected here once approved.</span>
+                        }
+                        @if (Model.PendingImageCount > 0)
+                        {
+                            <span> (@Model.PendingImageCount picture(s) waiting for approval.)</span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="form-text mb-2">Select up to 7 approved pictures to show on the listing page.</div>
+                    <div class="row mb-3" id="imagePicker">
+                        @foreach (var image in Model.ApprovedImages)
+                        {
+                            <div class="col-6 col-md-3 mb-3">
+                                <img src="@Url.Content("~/" + image.FilePath)" alt="@(image.AltText ?? image.FileName)" class="listing-thumb mb-1" />
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input image-check"
+                                           name="SelectedImageIds" value="@image.UploadedImageId"
+                                           id="img_@image.UploadedImageId"
+                                           checked="@Model.SelectedImageIds.Contains(image.UploadedImageId)" />
+                                    <label class="form-check-label small" for="img_@image.UploadedImageId">@image.FileName</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @if (Model.PendingImageCount > 0)
+                    {
+                        <div class="form-text mb-3">@Model.PendingImageCount more picture(s) are waiting for approval.</div>
+                    }
+                }
+
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <a asp-action="CustomerListings" asp-route-customerId="@Model.Listing.CustomerId"
+                       class="btn cancel-btn text-decoration-none text-center">Cancel</a>
+                    <button type="submit" class="btn create-btn">Save Listing</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // 【E2 新增】两个小交互
+        (function () {
+            // 1. 合同未签时，经纪人下拉框不可选（合同期内锁定的情况由服务器端输出 disabled，这里不处理）
+            var contract = document.getElementById('contractSigned');
+            var agent = document.getElementById('agentSelect');
+            var locked = @(Model.AgentLocked ? "true" : "false");
+            function syncAgent() {
+                if (!contract || !agent || locked) { return; }
+                agent.disabled = !contract.checked;
+                if (!contract.checked) { agent.value = ''; }
+            }
+            if (contract) { contract.addEventListener('change', syncAgent); }
+            syncAgent();
+
+            // 2. 图片最多只能勾选 7 张（规则 006）
+            var checks = document.querySelectorAll('.image-check');
+            function limitImages() {
+                var count = 0;
+                checks.forEach(function (c) { if (c.checked) { count++; } });
+                checks.forEach(function (c) { if (!c.checked) { c.disabled = count >= 7; } });
+            }
+            checks.forEach(function (c) { c.addEventListener('change', limitImages); });
+            limitImages();
+        })();
+    </script>
+}

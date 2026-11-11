@@ -1,0 +1,73 @@
+@model UploadFileViewModel
+@* 【E2 改版】页面 7 第三步：浏览文件、自定义文件名、填写描述和替代文字，校验后上传
+   上传成功后显示确认消息；图片未审核前，网站上显示 "Picture Not Available" *@
+@{
+    ViewData["Title"] = "Upload Image - Upload File";
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 900px;">
+
+        <h2 class="create-agent mb-4 text-uppercase">Upload Image</h2>
+
+        <partial name="_UploadSteps" model="3" />
+
+        @* 上传成功的确认消息 / 错误提示（共用组件） *@
+        <partial name="_StatusMessage" />
+
+        <div class="e2-info-bar">
+            Uploading for <strong>@Model.TargetLabel</strong>
+        </div>
+
+        <div class="agent-form-card">
+
+            <form asp-action="Details" method="post" enctype="multipart/form-data">
+
+                <input type="hidden" name="ImageType" value="@Model.ImageType" />
+                <input type="hidden" name="TargetId" value="@Model.TargetId" />
+
+                @* 文件类型错误 / 文件太大 / 没选文件 时的错误提示 *@
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                <div class="agent-info">Image Details</div>
+
+                <div class="mb-3">
+                    <label for="imageFile" class="form-label agent-label">Select Image</label>
+                    <input type="file" id="imageFile" name="imageFile" class="form-control agent-input"
+                           accept=".jpg,.jpeg,.png,.webp" />
+                    <div class="form-text">JPG, PNG or WEBP, up to 5 MB.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CustomFileName" class="form-label agent-label">File Name (optional)</label>
+                    <input asp-for="CustomFileName" class="form-control agent-input" maxlength="100" />
+                    <div class="form-text">
+                        Prefilled with the standard name for this record. Clear it to keep the original file name.
+                        If the name is already used, a number is added automatically.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label agent-label">Description</label>
+                    <textarea asp-for="Description" rows="4" class="form-control agent-input"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="AltText" class="form-label agent-label">Alternative Text (Alt Text)</label>
+                    <input asp-for="AltText" class="form-control agent-input" />
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="SelectTarget" asp-route-imageType="@Model.ImageType" class="btn cancel-btn btn-inline">Back</a>
+                    <button type="submit" class="btn upload-btn">Upload Image</button>
+                </div>
+
+            </form>
+
+        </div>
+
+        <div class="mt-3 small">
+            <a asp-action="Index">Start over with another record</a>
+        </div>
+    </div>
+</div>

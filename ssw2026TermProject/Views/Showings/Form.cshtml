@@ -1,0 +1,127 @@
+@model ShowingFormViewModel
+@* 【E2 新增】页面 5：预约表单（新建和修改共用同一个视图）
+   IsEdit = false 时提交到 Create；IsEdit = true 时提交到 Edit *@
+@{
+    ViewData["Title"] = Model.IsEdit ? "Edit Showing" : "Book Showing";
+
+    // 可选房源下拉的数据：显示"#编号 - 街道地址, 城市"
+    var listingItems = new SelectList(
+        Model.Listings.Select(l => new { l.ListingId, Text = $"#{l.ListingId} - {l.StreetAddress}, {l.City}" }),
+        "ListingId", "Text", Model.Showing.ListingId);
+
+    // 经纪人下拉框的配置（共用组件 _AgentSelect）
+    // 规则 016：经纪人自己预约时 Locked = true（自动选定且不能改）；Office Manager 从列表里选
+    var agentSelect = new AgentSelectModel
+    {
+        FieldName = "Showing.AgentId",
+        SelectedId = Model.Showing.AgentId,
+        Agents = Model.Agents,
+        Locked = Model.AgentLocked,
+        ElementId = "agentSelect"
+    };
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 900px;">
+
+        <h2 class="create-agent mb-4 text-uppercase">@(Model.IsEdit ? "Edit Showing" : "Book Showing")</h2>
+
+        <partial name="_StatusMessage" />
+
+        @if (Model.Customer != null)
+        {
+            <div class="e2-info-bar">
+                Customer: <strong>@Model.Customer.FirstName @Model.Customer.LastName</strong>
+                (ID: @Model.Customer.ID) &middot; @Model.Customer.Phone
+            </div>
+        }
+
+        <div class="agent-form-card">
+
+            <form asp-action="@(Model.IsEdit ? "Edit" : "Create")"
+                  asp-route-id="@(Model.IsEdit ? Model.Showing.ShowingId : (int?)null)"
+                  method="post">
+
+                <input type="hidden" asp-for="Showing.ShowingId" />
+                <input type="hidden" asp-for="Showing.CustomerId" />
+
+                @* 校验失败、冲突（经纪人冲突 / 房源冲突 / 15 分钟路程时间）时显示的错误 *@
+                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                @* 要看的房源 *@
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label asp-for="Showing.ListingId" class="form-label agent-label">Listing</label>
+                        <select asp-for="Showing.ListingId" asp-items="listingItems" class="form-select agent-input">
+                            <option value="">-- Select a listing --</option>
+                        </select>
+                        <span asp-validation-for="Showing.ListingId" class="text-danger small d-block mt-1"></span>
+                        @if (Model.Listings.Count == 0)
+                        {
+                            <div class="form-text">There are no available listings to book right now.</div>
+                        }
+                    </div>
+                </div>
+
+                @* 日期、开始时间、结束时间 *@
+                <div class="row mb-3">
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label for="showingDate" class="form-label agent-label">Date</label>
+                        <input type="date" id="showingDate" name="Showing.ShowingDate" class="form-control agent-input" required
+                               value="@Model.Showing.ShowingDate?.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="Showing.ShowingDate" class="text-danger small d-block mt-1"></span>
+                    </div>
+                    <div class="col-md-4 mb-3 mb-md-0">
+                        <label for="startTime" class="form-label agent-label">Start Time</label>
+                        <input type="time" id="startTime" name="Showing.StartTime" class="form-control agent-input" required
+                               value="@Model.Showing.StartTime?.ToString("HH:mm")" />
+                        <span asp-validation-for="Showing.StartTime" class="text-danger small d-block mt-1"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="endTime" class="form-label agent-label">End Time</label>
+                        <input type="time" id="endTime" name="Showing.EndTime" class="form-control agent-input" required
+                               value="@Model.Showing.EndTime?.ToString("HH:mm")" />
+                        <span asp-validation-for="Showing.EndTime" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+                <div class="form-text mb-3">
+                    A 15-minute travel gap is required before and after each showing for the agent.
+                </div>
+
+                @* 经纪人：必须选择，不选不能保存 *@
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label agent-label">Agent</label>
+                        <partial name="_AgentSelect" model="agentSelect" />
+                        <span asp-validation-for="Showing.AgentId" class="text-danger small d-block mt-1"></span>
+                        @if (Model.AgentLocked)
+                        {
+                            <div class="form-text">You are booking as yourself, so the agent is selected automatically.</div>
+                        }
+                    </div>
+                </div>
+
+                @* 备注框 *@
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <label asp-for="Showing.Notes" class="form-label agent-label">Notes</label>
+                        <textarea asp-for="Showing.Notes" rows="3" class="form-control agent-input"></textarea>
+                        <span asp-validation-for="Showing.Notes" class="text-danger small d-block mt-1"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end gap-3 mt-4">
+                    <a asp-action="Search" class="btn cancel-btn text-decoration-none text-center">Cancel</a>
+                    <button type="submit" class="btn create-btn">Save Showing</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

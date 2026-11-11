@@ -1,0 +1,50 @@
+@model Showing
+@* 【E2 新增】预约详情 / 保存成功后的确认页 *@
+@{
+    ViewData["Title"] = $"Showing #{Model.ShowingId}";
+    bool canEdit = ViewBag.CanEdit == true;
+}
+
+<div class="bg-color py-4">
+    <div class="container" style="max-width: 900px;">
+
+        <h2 class="create-agent mb-4 text-uppercase">Showing #@Model.ShowingId</h2>
+
+        @* 保存成功的确认消息（共用组件） *@
+        <partial name="_StatusMessage" />
+
+        <div class="agent-form-card">
+            <dl class="row e2-dl mb-0">
+                <dt class="col-sm-4">Customer</dt>
+                <dd class="col-sm-8">@Model.Customer?.FirstName @Model.Customer?.LastName (ID: @Model.CustomerId)</dd>
+
+                <dt class="col-sm-4">Listing</dt>
+                <dd class="col-sm-8">
+                    <a asp-controller="Listings" asp-action="Details" asp-route-id="@Model.ListingId">
+                        #@Model.ListingId - @Model.Listing?.StreetAddress, @Model.Listing?.City
+                    </a>
+                </dd>
+
+                <dt class="col-sm-4">Date</dt>
+                <dd class="col-sm-8">@Model.ShowingDate?.ToString("yyyy-MM-dd")</dd>
+
+                <dt class="col-sm-4">Time</dt>
+                <dd class="col-sm-8">@Model.StartTime?.ToString("HH:mm") - @Model.EndTime?.ToString("HH:mm")</dd>
+
+                <dt class="col-sm-4">Agent</dt>
+                <dd class="col-sm-8">@Model.Agent?.FirstName @Model.Agent?.LastName</dd>
+
+                <dt class="col-sm-4">Notes</dt>
+                <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.Notes) ? "-" : Model.Notes)</dd>
+            </dl>
+
+            <div class="d-flex flex-wrap justify-content-end gap-3 mt-4">
+                <a asp-action="Search" class="btn cancel-btn btn-inline">Search Showings</a>
+                @if (canEdit)
+                {
+                    <a asp-action="Edit" asp-route-id="@Model.ShowingId" class="btn create-btn btn-inline">Edit</a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
