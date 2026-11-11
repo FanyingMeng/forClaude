@@ -16,7 +16,8 @@ namespace ssw2026TermProject.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UploadedImageId { get; set; }
 
-        // 保存后的相对路径（E2 改动：未审核图片放在 tempImages，审核通过后才会挪到 approvedImages）
+        // 规则 013：这里存的是图片审核通过后将要放置的路径（approvedImages/...）；
+        // 未审核时物理文件暂时放在 tempImages，审核通过后挪过去
         [Required]
         public string? FilePath { get; set; }
 

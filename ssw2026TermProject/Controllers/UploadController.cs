@@ -280,8 +280,9 @@ namespace ssw2026TermProject.Controllers
             // ---------- 4. 保存元数据，并关联到所选房源或经纪人 ----------
             var uploadedImage = new UploadedImage
             {
-                // 未审核图片放在 tempImages；审核通过后再挪到 approvedImages 并更新路径
-                FilePath = "tempImages/" + fileName,
+                // 规则 013：数据库里存的是"图片审核通过后将要放置的路径"（approvedImages），
+                // 而物理文件现在先放在 tempImages，审核通过后再挪过去，所以这里不需要再改路径
+                FilePath = "approvedImages/" + fileName,
                 FileName = fileName,
                 Description = model.Description?.Trim(),
                 AltText = model.AltText?.Trim(),
